@@ -16,6 +16,7 @@ import { ProductsModule } from './products/product.module';
 
 // NUEVO: Categories
 import { CategoriesModule } from './categories/categories.module';
+import { SuppliersModule } from './suppliers/suppliers.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CategoriesModule } from './categories/categories.module';
     AuthModule,
     ProductsModule,
     CategoriesModule, // 👈 agregado
+    SuppliersModule
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
