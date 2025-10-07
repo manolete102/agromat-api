@@ -1,30 +1,23 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from './users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { RolesGuard } from './guards/roles.guard'; // <---
+import { UsersModule } from './users.module'; // 👈 necesario para validar usuarios
 
 @Module({
   imports: [
-    ConfigModule,
-    UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: (cfg: ConfigService) => ({
-        secret: cfg.get<string>('JWT_SECRET') ?? 'dev_fallback_secret',
-        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES') ?? '7d' },
-      }),
-      inject: [ConfigService],
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'super_secret_key', // ⚠️ cambia esto en producción
+      signOptions: { expiresIn: '1h' },
     }),
+    UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RolesGuard], // <---
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService], // 👈 necesario para evitar el error circular
 })
 export class AuthModule {}
