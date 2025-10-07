@@ -7,29 +7,24 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from './users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RolesGuard } from './guards/roles.guard'; // <---
 
 @Module({
   imports: [
-    ConfigModule, // para usar ConfigService aquí
+    ConfigModule,
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (cfg: ConfigService) => {
-        const secret = cfg.get<string>('JWT_SECRET');
-        if (!secret) {
-          console.warn('[AuthModule] JWT_SECRET no está definido. Usando fallback de desarrollo.');
-        }
-        return {
-          secret: secret ?? 'dev_fallback_secret',
-          signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES') ?? '7d' },
-        };
-      },
+      useFactory: (cfg: ConfigService) => ({
+        secret: cfg.get<string>('JWT_SECRET') ?? 'dev_fallback_secret',
+        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES') ?? '7d' },
+      }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RolesGuard], // <---
   exports: [AuthService],
 })
 export class AuthModule {}
