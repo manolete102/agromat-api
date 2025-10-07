@@ -12,9 +12,10 @@ import { AppService } from './app.service';
 // Módulos existentes
 import { UsersModule } from './users.module';
 import { AuthModule } from './auth.module';
-
-// 👇 NUEVO: Importa el módulo de productos
 import { ProductsModule } from './products/product.module';
+
+// NUEVO: Categories
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ProductsModule } from './products/product.module';
     }),
     UsersModule,
     AuthModule,
-    ProductsModule, // 👈 Agregado aquí
+    ProductsModule,
+    CategoriesModule, // 👈 agregado
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
